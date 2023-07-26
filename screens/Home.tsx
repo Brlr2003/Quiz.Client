@@ -10,7 +10,7 @@ export function HomeScreen({ navigation }: any) {
         justifyContent: "center",
       }}>
       <Text style={{ fontWeight: "900", fontSize: 16 }}>
-        Choose on of the following
+        Choose one of the following
       </Text>
       <View style={{ width: "70%" }}>
         <View style={{ marginVertical: 5 }}>

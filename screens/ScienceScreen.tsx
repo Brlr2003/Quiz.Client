@@ -8,13 +8,16 @@ export function ScienceScreen({ route, navigation }: any) {
     <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
       <View
         style={{ flexDirection: "column", marginVertical: 50, width: "75%" }}>
-        <Button title="Mathematics" onPress={() => navigation.goBack()} />
+        <Button
+          title="Mathematics"
+          onPress={() => navigation.navigate("Quiz")}
+        />
         <View style={{ height: 5 }}></View>
-        <Button title="Biology" onPress={() => navigation.navigate("Home")} />
+        <Button title="Biology" onPress={() => navigation.navigate("Quiz")} />
         <View style={{ height: 5 }}></View>
-        <Button title="Chemistry" onPress={() => navigation.goBack()} />
+        <Button title="Chemistry" onPress={() => navigation.navigate("Quiz")} />
         <View style={{ height: 5 }}></View>
-        <Button title="Physics" onPress={() => navigation.navigate("Home")} />
+        <Button title="Physics" onPress={() => navigation.navigate("Quiz")} />
       </View>
       <View style={{ flexDirection: "row" }}>
         <Pressable style={styles.button} onPress={() => navigation.goBack()}>
