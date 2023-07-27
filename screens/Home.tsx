@@ -1,7 +1,11 @@
 import { Text, View, Button } from "react-native";
 import React from "react";
+import { RootNavigatorParamList } from "../types/Navigation";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-export function HomeScreen({ navigation }: any) {
+type Props = NativeStackScreenProps<RootNavigatorParamList, "Home">;
+
+export function HomeScreen({ navigation }: Props) {
   return (
     <View
       style={{
@@ -18,7 +22,10 @@ export function HomeScreen({ navigation }: any) {
             title="Science"
             onPress={() => {
               /* 1. Navigate to the Details route with params */
-              navigation.navigate("Science");
+              navigation.navigate("Department", {
+                departmentId: 1,
+                departmentName: "Science",
+              });
             }}
           />
         </View>
@@ -26,14 +33,26 @@ export function HomeScreen({ navigation }: any) {
         <View style={{ marginVertical: 5 }}>
           <Button
             title="Literary"
-            onPress={() => navigation.navigate("Literary")}
+            onPress={() => {
+              /* 1. Navigate to the Details route with params */
+              navigation.navigate("Department", {
+                departmentId: 2,
+                departmentName: "Literary",
+              });
+            }}
           />
         </View>
 
         <View style={{ marginVertical: 5 }}>
           <Button
             title="Mixed"
-            onPress={() => navigation.navigate("Literary")}
+            onPress={() => {
+              /* 1. Navigate to the Details route with params */
+              navigation.navigate("Department", {
+                departmentId: 3,
+                departmentName: "Mixed",
+              });
+            }}
           />
         </View>
       </View>
