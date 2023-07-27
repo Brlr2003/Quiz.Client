@@ -21,7 +21,6 @@ export function HomeScreen({ navigation }: Props) {
           <Button
             title="Science"
             onPress={() => {
-              /* 1. Navigate to the Details route with params */
               navigation.navigate("Department", {
                 departmentId: 1,
                 departmentName: "Science",
