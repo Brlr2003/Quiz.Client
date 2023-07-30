@@ -10,7 +10,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootNavigatorParamList } from "../types/Navigation";
 
 const windowWidth = Dimensions.get("window").width;
-const buttonWidth = windowWidth - 40; // Assuming 20 as the horizontal margin
+const buttonWidth = windowWidth - 40;
 
 const quizQuestions = [
   {
@@ -102,6 +102,9 @@ export function QuizScreen({ navigation, route }: Props) {
   };
 
   const handleSubmit = () => {
+    if (selectedChoice === currentQuestion.correctAnswerIndex) {
+      setScore(score + 1);
+    }
     navigation.navigate("Score", { score, quizId: 1 });
   };
 

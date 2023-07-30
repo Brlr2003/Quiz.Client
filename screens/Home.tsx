@@ -33,7 +33,6 @@ export function HomeScreen({ navigation }: Props) {
           <Button
             title="Literary"
             onPress={() => {
-              /* 1. Navigate to the Details route with params */
               navigation.navigate("Department", {
                 departmentId: 2,
                 departmentName: "Literary",
@@ -46,7 +45,6 @@ export function HomeScreen({ navigation }: Props) {
           <Button
             title="Mixed"
             onPress={() => {
-              /* 1. Navigate to the Details route with params */
               navigation.navigate("Department", {
                 departmentId: 3,
                 departmentName: "Mixed",

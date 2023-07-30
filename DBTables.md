@@ -45,7 +45,7 @@ Same for questions, Answers
 
 SetCorrectAnswer(QuestionId:number,AnswerId:number)
 
-CreatQuiz(UserId,SubjectId) => Quiz
+CreateQuiz(UserId,SubjectId) => Quiz
 SetAnswer(UserId,QuizQuestionId,AnswerId)
 EndQuiz(UserId,QuizId) => Score
 
