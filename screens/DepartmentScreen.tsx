@@ -17,7 +17,7 @@ const DepartmentScreen = ({ navigation, route }: Props) => {
           title="Mathematics"
           onPress={() =>
             navigation.navigate("Quiz", {
-              quizeName: "Mathematics",
+              quizName: "Mathematics",
               quizId: 1,
             })
           }
@@ -27,7 +27,7 @@ const DepartmentScreen = ({ navigation, route }: Props) => {
           title="Biology"
           onPress={() =>
             navigation.navigate("Quiz", {
-              quizeName: "Biology",
+              quizName: "Biology",
               quizId: 1,
             })
           }
@@ -37,7 +37,7 @@ const DepartmentScreen = ({ navigation, route }: Props) => {
           title="Chemistry"
           onPress={() =>
             navigation.navigate("Quiz", {
-              quizeName: "Chemistry",
+              quizName: "Chemistry",
               quizId: 1,
             })
           }
@@ -47,7 +47,7 @@ const DepartmentScreen = ({ navigation, route }: Props) => {
           title="Physics"
           onPress={() =>
             navigation.navigate("Quiz", {
-              quizeName: "Physics",
+              quizName: "Physics",
               quizId: 1,
             })
           }

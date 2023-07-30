@@ -6,13 +6,13 @@ export type RootNavigatorParamList = {
   };
   Quiz: {
     quizId: number;
-    quizeName: string;
+    quizName: string;
   };
   Score: {
-    quizeId: number;
+    quizId: number;
     score: number;
   };
   Result: {
-    quizeId: number;
+    quizId: number;
   };
 };

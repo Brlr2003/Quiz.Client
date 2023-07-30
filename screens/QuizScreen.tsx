@@ -79,7 +79,7 @@ const quizQuestions = [
 type Props = NativeStackScreenProps<RootNavigatorParamList, "Quiz">;
 
 export function QuizScreen({ navigation, route }: Props) {
-  const { quizId, quizeName } = route.params;
+  const { quizId, quizName } = route.params;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
   const [score, setScore] = useState(0);
@@ -102,12 +102,12 @@ export function QuizScreen({ navigation, route }: Props) {
   };
 
   const handleSubmit = () => {
-    navigation.navigate("Score", { score, quizeId: 1 });
+    navigation.navigate("Score", { score, quizId: 1 });
   };
 
   return (
     <View style={styles.container}>
-      <Text>Quiz Name: {quizeName}</Text>
+      <Text>Quiz Name: {quizName}</Text>
       {currentQuestionIndex === quizQuestions.length - 1 ? (
         <>
           <Text style={styles.scoreText}>Score: {score}/10</Text>
