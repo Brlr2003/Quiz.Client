@@ -8,6 +8,7 @@ import {
 import React, { useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootNavigatorParamList } from "../types/Navigation";
+import { useScoreContext } from "../contexts/ScoreContext";
 
 const windowWidth = Dimensions.get("window").width;
 const buttonWidth = windowWidth - 40;
@@ -81,105 +82,97 @@ type Props = NativeStackScreenProps<RootNavigatorParamList, "Quiz">;
 export function QuizScreen({ navigation, route }: Props) {
   const { quizId, quizName } = route.params;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedChoice, setSelectedChoice] = useState<number | null>(null);
-  const [score, setScore] = useState(0);
+  const [selectedChoices, setSelectedChoices] = useState<(number | null)[]>(
+    Array(quizQuestions.length).fill(null)
+  );
+  const { score, setScore } = useScoreContext(); // Access the score and setScore from context
 
   const currentQuestion = quizQuestions[currentQuestionIndex];
-  const isAnswerCorrect = selectedChoice === currentQuestion.correctAnswerIndex;
+  const isAnswerCorrect =
+    selectedChoices[currentQuestionIndex] ===
+    currentQuestion.correctAnswerIndex;
 
   const handleChoicePress = (index: number) => {
-    setSelectedChoice(index);
+    const newSelectedChoices = [...selectedChoices];
+    newSelectedChoices[currentQuestionIndex] = index;
+    setSelectedChoices(newSelectedChoices);
   };
 
   const handleNextQuestion = () => {
-    if (selectedChoice === currentQuestion.correctAnswerIndex) {
-      setScore(score + 1);
-    }
-    setSelectedChoice(null);
     if (currentQuestionIndex < quizQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
 
-  const handleSubmit = () => {
-    if (selectedChoice === currentQuestion.correctAnswerIndex) {
-      setScore(score + 1);
+  const handlePreviousQuestion = () => {
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
-    navigation.navigate("Score", { score, quizId: 1 });
+  };
+
+  const handleSubmit = () => {
+    let updatedScore = score;
+    if (
+      selectedChoices[currentQuestionIndex] ===
+      currentQuestion.correctAnswerIndex
+    ) {
+      updatedScore += 1;
+    }
+
+    if (currentQuestionIndex === quizQuestions.length - 1) {
+      navigation.navigate("Score", { quizId, score: updatedScore });
+      setScore(0);
+    } else {
+      setScore(updatedScore);
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text>Quiz Name: {quizName}</Text>
-      {currentQuestionIndex === quizQuestions.length - 1 ? (
-        <>
-          <Text style={styles.scoreText}>Score: {score}/10</Text>
-          <Text style={styles.question}>{currentQuestion.question}</Text>
-          {currentQuestion.choices.map((choice, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleChoicePress(index)}
-              style={[
-                styles.choiceButton,
-                selectedChoice !== null &&
-                  selectedChoice === index &&
-                  (isAnswerCorrect
-                    ? styles.correctChoiceButton
-                    : styles.wrongChoiceButton),
-              ]}
-              disabled={selectedChoice !== null}>
-              <Text
-                style={[
-                  styles.choiceText,
-                  selectedChoice !== null &&
-                    selectedChoice === index &&
-                    styles.selectedChoiceText,
-                ]}>
-                {choice}
-              </Text>
-            </TouchableOpacity>
-          ))}
-          <TouchableOpacity
-            onPress={handleSubmit}
-            style={[styles.nextButton, { width: buttonWidth }]}>
-            <Text style={styles.nextButtonText}>Submit</Text>
-          </TouchableOpacity>
-        </>
-      ) : (
-        <>
-          <Text style={styles.scoreText}>Score: {score}/10</Text>
-          <Text style={styles.question}>{currentQuestion.question}</Text>
-          {currentQuestion.choices.map((choice, index) => (
-            <TouchableOpacity
-              key={index}
-              onPress={() => handleChoicePress(index)}
-              style={[
-                styles.choiceButton,
-                selectedChoice !== null &&
-                  selectedChoice === index &&
-                  (isAnswerCorrect
-                    ? styles.correctChoiceButton
-                    : styles.wrongChoiceButton),
-              ]}
-              disabled={selectedChoice !== null}>
-              <Text
-                style={[
-                  styles.choiceText,
-                  selectedChoice !== null &&
-                    selectedChoice === index &&
-                    styles.selectedChoiceText,
-                ]}>
-                {choice}
-              </Text>
-            </TouchableOpacity>
-          ))}
-          <TouchableOpacity
-            onPress={handleNextQuestion}
-            style={[styles.nextButton, { width: buttonWidth }]}>
-            <Text style={styles.nextButtonText}>Next</Text>
-          </TouchableOpacity>
-        </>
-      )}
+      <Text style={styles.scoreText}>Score: {score}/10</Text>
+      <Text style={styles.question}>{currentQuestion.question}</Text>
+      {currentQuestion.choices.map((choice, index) => (
+        <TouchableOpacity
+          key={index}
+          onPress={() => handleChoicePress(index)}
+          style={[
+            styles.choiceButton,
+            selectedChoices[currentQuestionIndex] !== null &&
+              selectedChoices[currentQuestionIndex] === index &&
+              (isAnswerCorrect
+                ? styles.correctChoiceButton
+                : styles.wrongChoiceButton),
+          ]}
+          disabled={selectedChoices[currentQuestionIndex] !== null}>
+          <Text
+            style={[
+              styles.choiceText,
+              selectedChoices[currentQuestionIndex] !== null &&
+                selectedChoices[currentQuestionIndex] === index &&
+                styles.selectedChoiceText,
+            ]}>
+            {choice}
+          </Text>
+        </TouchableOpacity>
+      ))}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          onPress={handlePreviousQuestion}
+          style={[styles.navigationButton, { width: buttonWidth / 2 }]}>
+          <Text style={styles.navigationButtonText}>Previous</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleSubmit}
+          style={[styles.submitButton, { width: buttonWidth / 2 }]}>
+          <Text style={styles.submitButtonText}>
+            {currentQuestionIndex === quizQuestions.length - 1
+              ? "Submit"
+              : "Next"}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -221,24 +214,29 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     borderColor: "red",
   },
-  nextButton: {
+  buttonContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: buttonWidth,
+  },
+  navigationButton: {
     backgroundColor: "#007AFF",
     padding: 10,
     borderRadius: 8,
-    marginTop: 20,
   },
-  nextButtonText: {
+  navigationButtonText: {
     color: "#FFF",
     fontSize: 16,
+    textAlign: "center",
   },
   submitButton: {
     backgroundColor: "#007AFF",
     padding: 10,
     borderRadius: 8,
-    marginTop: 20,
   },
   submitButtonText: {
     color: "#FFF",
     fontSize: 16,
+    textAlign: "center",
   },
 });
