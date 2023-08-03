@@ -130,8 +130,19 @@ export function QuizScreen({ navigation, route }: Props) {
       }
       return acc;
     }, 0);
-    setScore(newScore);
-    navigation.navigate("Score", { score: newScore, quizId: 1 });
+    if (
+      selectedChoices[currentQuestionIndex] ===
+      currentQuestion.correctAnswerIndex
+    ) {
+      //setScore(score + 1);
+      // const updatedSelectedQuestions = [...selectedQuestions];
+      // updatedSelectedQuestions[currentQuestionIndex] = true;
+      // setSelectedQuestions(updatedSelectedQuestions);
+      navigation.navigate("Score", { score: newScore + 1, quizId: 1 });
+    } else {
+      // setScore(newScore);
+      navigation.navigate("Score", { score: newScore, quizId: 1 });
+    }
   };
 
   return (
@@ -206,7 +217,7 @@ const styles = StyleSheet.create({
   },
   choiceButton: {
     alignItems: "center",
-    width: "40%",
+    width: "50%",
     padding: 10,
     borderRadius: 8,
     borderWidth: 1,
