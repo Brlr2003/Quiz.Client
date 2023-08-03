@@ -8,7 +8,6 @@ import {
 import React, { useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootNavigatorParamList } from "../types/Navigation";
-import { useScoreContext } from "../contexts/ScoreContext";
 
 const windowWidth = Dimensions.get("window").width;
 const buttonWidth = windowWidth - 40;
@@ -82,10 +81,15 @@ type Props = NativeStackScreenProps<RootNavigatorParamList, "Quiz">;
 export function QuizScreen({ navigation, route }: Props) {
   const { quizId, quizName } = route.params;
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
   const [selectedChoices, setSelectedChoices] = useState<(number | null)[]>(
-    Array(quizQuestions.length).fill(null)
+    new Array(quizQuestions.length).fill(null)
   );
-  const { score, setScore } = useScoreContext(); // Access the score and setScore from context
+  const [selectedQuestions, setSelectedQuestions] = useState<boolean[]>(
+    new Array(quizQuestions.length).fill(false)
+  );
+
+  const [score, setScore] = useState(0);
 
   const currentQuestion = quizQuestions[currentQuestionIndex];
   const isAnswerCorrect =
@@ -93,45 +97,46 @@ export function QuizScreen({ navigation, route }: Props) {
     currentQuestion.correctAnswerIndex;
 
   const handleChoicePress = (index: number) => {
-    const newSelectedChoices = [...selectedChoices];
-    newSelectedChoices[currentQuestionIndex] = index;
-    setSelectedChoices(newSelectedChoices);
+    const updatedChoices = [...selectedChoices];
+    updatedChoices[currentQuestionIndex] = index;
+    setSelectedChoices(updatedChoices);
   };
 
   const handleNextQuestion = () => {
+    if (
+      selectedChoices[currentQuestionIndex] ===
+      currentQuestion.correctAnswerIndex
+    ) {
+      //setScore(score + 1);
+      const updatedSelectedQuestions = [...selectedQuestions];
+      updatedSelectedQuestions[currentQuestionIndex] = true;
+      setSelectedQuestions(updatedSelectedQuestions);
+    }
     if (currentQuestionIndex < quizQuestions.length - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
     }
   };
 
   const handlePreviousQuestion = () => {
-    if (currentQuestionIndex > 0) {
+    if (currentQuestionIndex !== 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
 
   const handleSubmit = () => {
-    let updatedScore = score;
-    if (
-      selectedChoices[currentQuestionIndex] ===
-      currentQuestion.correctAnswerIndex
-    ) {
-      updatedScore += 1;
-    }
-
-    if (currentQuestionIndex === quizQuestions.length - 1) {
-      navigation.navigate("Score", { quizId, score: updatedScore });
-      setScore(0);
-    } else {
-      setScore(updatedScore);
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
-    }
+    const newScore = selectedQuestions.reduce((acc, value) => {
+      if (value === true) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
+    setScore(newScore);
+    navigation.navigate("Score", { score: newScore, quizId: 1 });
   };
 
   return (
     <View style={styles.container}>
       <Text>Quiz Name: {quizName}</Text>
-      <Text style={styles.scoreText}>Score: {score}/10</Text>
       <Text style={styles.question}>{currentQuestion.question}</Text>
       {currentQuestion.choices.map((choice, index) => (
         <TouchableOpacity
@@ -141,11 +146,8 @@ export function QuizScreen({ navigation, route }: Props) {
             styles.choiceButton,
             selectedChoices[currentQuestionIndex] !== null &&
               selectedChoices[currentQuestionIndex] === index &&
-              (isAnswerCorrect
-                ? styles.correctChoiceButton
-                : styles.wrongChoiceButton),
-          ]}
-          disabled={selectedChoices[currentQuestionIndex] !== null}>
+              styles.selectedChoiceButton,
+          ]}>
           <Text
             style={[
               styles.choiceText,
@@ -157,16 +159,25 @@ export function QuizScreen({ navigation, route }: Props) {
           </Text>
         </TouchableOpacity>
       ))}
-      <View style={styles.buttonContainer}>
+      <View style={{ flexDirection: "row" }}>
         <TouchableOpacity
           onPress={handlePreviousQuestion}
-          style={[styles.navigationButton, { width: buttonWidth / 2 }]}>
-          <Text style={styles.navigationButtonText}>Previous</Text>
+          style={[styles.nextButton, { width: buttonWidth / 2 }]}>
+          <Text style={styles.nextButtonText}>Previous</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={handleSubmit}
-          style={[styles.submitButton, { width: buttonWidth / 2 }]}>
-          <Text style={styles.submitButtonText}>
+          onPress={
+            currentQuestionIndex === quizQuestions.length - 1
+              ? handleSubmit
+              : handleNextQuestion
+          }
+          style={[
+            styles.nextButton,
+            {
+              width: buttonWidth / 2,
+            },
+          ]}>
+          <Text style={styles.nextButtonText}>
             {currentQuestionIndex === quizQuestions.length - 1
               ? "Submit"
               : "Next"}
@@ -194,6 +205,8 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   choiceButton: {
+    alignItems: "center",
+    width: "40%",
     padding: 10,
     borderRadius: 8,
     borderWidth: 1,
@@ -203,9 +216,14 @@ const styles = StyleSheet.create({
   choiceText: {
     fontSize: 16,
   },
+  selectedChoiceButton: {
+    backgroundColor: "blue",
+    borderColor: "blue",
+  },
   selectedChoiceText: {
     color: "#FFF",
   },
+
   correctChoiceButton: {
     backgroundColor: "green",
     borderColor: "green",
@@ -214,29 +232,27 @@ const styles = StyleSheet.create({
     backgroundColor: "red",
     borderColor: "red",
   },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    width: buttonWidth,
-  },
-  navigationButton: {
+  nextButton: {
     backgroundColor: "#007AFF",
     padding: 10,
     borderRadius: 8,
+    margin: 5,
+    marginTop: 20,
   },
-  navigationButtonText: {
+
+  nextButtonText: {
     color: "#FFF",
     fontSize: 16,
-    textAlign: "center",
   },
+
   submitButton: {
     backgroundColor: "#007AFF",
     padding: 10,
     borderRadius: 8,
+    marginTop: 20,
   },
   submitButtonText: {
     color: "#FFF",
     fontSize: 16,
-    textAlign: "center",
   },
 });
