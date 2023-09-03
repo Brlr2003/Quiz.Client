@@ -1,11 +1,27 @@
 import { Text, View, Button } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { RootNavigatorParamList } from "../types/Navigation";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import axios from "axios";
+import { useURL } from "expo-linking";
 
 type Props = NativeStackScreenProps<RootNavigatorParamList, "Home">;
 
 export function HomeScreen({ navigation }: Props) {
+  useEffect(() => {
+    const apiUrl = "http://192.168.1.44:5222/api/Questions"; // Example URL
+
+    axios
+      .get(apiUrl)
+      .then((response) => {
+        // Handle the response data here
+        console.log(response.data);
+      })
+      .catch((error) => {
+        // Handle errors here
+        console.error(error);
+      });
+  }, []);
   return (
     <View
       style={{

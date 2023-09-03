@@ -134,10 +134,6 @@ export function QuizScreen({ navigation, route }: Props) {
       selectedChoices[currentQuestionIndex] ===
       currentQuestion.correctAnswerIndex
     ) {
-      //setScore(score + 1);
-      // const updatedSelectedQuestions = [...selectedQuestions];
-      // updatedSelectedQuestions[currentQuestionIndex] = true;
-      // setSelectedQuestions(updatedSelectedQuestions);
       navigation.navigate("Score", { score: newScore + 1, quizId: 1 });
     } else {
       // setScore(newScore);

@@ -1,3 +1,4 @@
+====================Done====================
 Tables:
 
 User:
@@ -20,6 +21,8 @@ Id, SubjectId, UserId, StartDate, Score?,
 
 QuizQuestion:
 Id, QuizId, QuestionId, CorrectAnswer, AnswerId?
+
+=====================Done======================
 
 CreateDepartment (Name:string)
 new Department(name);
