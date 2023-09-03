@@ -1,68 +1,77 @@
-import { Button, Pressable, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import { Button, StyleSheet, Text, View } from "react-native";
+import React, { useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootNavigatorParamList } from "../types/Navigation";
+import { Department, RootNavigatorParamList } from "../types/Navigation";
+
+// Import Department functions and types
+import { getDepartments, createDepartment } from "../utils/department"; // Update with your actual API functions and paths
 
 type Props = NativeStackScreenProps<RootNavigatorParamList, "Department">;
 
 const DepartmentScreen = ({ navigation, route }: Props) => {
-  const { departmentId, departmentName } = route.params;
+  const { departmentName } = route.params;
+
+  // State to store department data
+  const [departments, setDepartments] = useState<Department[]>([]);
+
+  useEffect(() => {
+    // Load department data when the component mounts
+    loadDepartments();
+  }, []);
+
+  const loadDepartments = async () => {
+    try {
+      // Fetch departments from your API
+      const response = await getDepartments();
+      setDepartments(response.data); // Access 'data' property
+    } catch (error) {
+      console.error("Error loading departments:", error);
+    }
+  };
+
+  const renderDepartmentButtons = () => {
+    return departments.map((department) => (
+      <Button
+        key={department.id}
+        title={department.name}
+        onPress={() => {
+          navigation.navigate("Quiz", {
+            quizName: department.name,
+            quizId: department.id,
+          });
+        }}
+      />
+    ));
+  };
+
+  const createNewDepartment = async () => {
+    try {
+      // Create a new department on the server
+      await createDepartment("New Department"); // Pass the department name you want to create
+      // Reload departments to reflect the changes
+      loadDepartments();
+    } catch (error) {
+      console.error("Error creating department:", error);
+    }
+  };
 
   return (
-    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
-      <Text>Department: {departmentName}</Text>
-      <View
-        style={{ flexDirection: "column", marginVertical: 50, width: "75%" }}>
+    <View style={styles.container}>
+      <Text style={styles.departmentText}>Department: {departmentName}</Text>
+      <View style={styles.departmentButtons}>{renderDepartmentButtons()}</View>
+      <Button title="Create New Department" onPress={createNewDepartment} />
+      <View style={styles.navigationButtons}>
         <Button
-          title="Mathematics"
-          onPress={() =>
-            navigation.navigate("Quiz", {
-              quizName: "Mathematics",
-              quizId: 1,
-            })
-          }
+          title="Go Home"
+          onPress={() => navigation.popToTop()}
+          color="black"
         />
-        <View style={{ height: 5 }}></View>
+        <View style={styles.buttonSpacer} />
         <Button
-          title="Biology"
-          onPress={() =>
-            navigation.navigate("Quiz", {
-              quizName: "Biology",
-              quizId: 1,
-            })
-          }
+          title="Go Back"
+          onPress={() => navigation.goBack()}
+          color="black"
         />
-        <View style={{ height: 5 }}></View>
-        <Button
-          title="Chemistry"
-          onPress={() =>
-            navigation.navigate("Quiz", {
-              quizName: "Chemistry",
-              quizId: 1,
-            })
-          }
-        />
-        <View style={{ height: 5 }}></View>
-        <Button
-          title="Physics"
-          onPress={() =>
-            navigation.navigate("Quiz", {
-              quizName: "Physics",
-              quizId: 1,
-            })
-          }
-        />
-      </View>
-      <View style={{ flexDirection: "row" }}>
-        <Pressable style={styles.button} onPress={() => navigation.goBack()}>
-          <Text style={styles.text}>Go Home</Text>
-        </Pressable>
-        <View style={{ width: 20 }}></View>
-        <Pressable
-          style={styles.button}
-          onPress={() => navigation.navigate("Home")}>
-          <Text style={styles.text}>Go Back</Text>
-        </Pressable>
       </View>
     </View>
   );
@@ -71,20 +80,24 @@ const DepartmentScreen = ({ navigation, route }: Props) => {
 export default DepartmentScreen;
 
 const styles = StyleSheet.create({
-  button: {
+  container: {
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 12,
-    paddingHorizontal: 32,
-    borderRadius: 4,
-    elevation: 3,
-    backgroundColor: "black",
   },
-  text: {
-    fontSize: 16,
-    lineHeight: 21,
+  departmentText: {
+    fontSize: 20,
     fontWeight: "bold",
-    letterSpacing: 0.25,
-    color: "white",
+    marginBottom: 20,
+  },
+  departmentButtons: {
+    width: "75%",
+    marginBottom: 20,
+  },
+  navigationButtons: {
+    flexDirection: "row",
+  },
+  buttonSpacer: {
+    width: 20,
   },
 });
