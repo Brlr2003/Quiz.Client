@@ -1,65 +1,65 @@
-import { Button, StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
+import { View, Text, Button, StyleSheet } from "react-native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Department, RootNavigatorParamList } from "../types/Navigation";
+import { RootNavigatorParamList, Subject } from "../types/Navigation";
 
-// Import Department functions and types
-import { getDepartments, createDepartment } from "../utils/department"; // Update with your actual API functions and paths
+// Import Subject function
+import { getSubjects, createSubject } from "../utils/subject"; // Update with your actual API functions and paths
 
 type Props = NativeStackScreenProps<RootNavigatorParamList, "Department">;
 
 const DepartmentScreen = ({ navigation, route }: Props) => {
   const { departmentName } = route.params;
 
-  // State to store department data
-  const [departments, setDepartments] = useState<Department[]>([]);
+  // State to store subject data
+  const [subjects, setSubjects] = useState<Subject[]>([]);
 
   useEffect(() => {
-    // Load department data when the component mounts
-    loadDepartments();
+    // Load subject data when the component mounts
+    loadSubjects();
   }, []);
 
-  const loadDepartments = async () => {
+  const loadSubjects = async () => {
     try {
-      // Fetch departments from your API
-      const response = await getDepartments();
-      setDepartments(response.data); // Access 'data' property
+      // Fetch subjects from your API
+      const response = await getSubjects();
+      setSubjects(response); // Set subjects to the response data
     } catch (error) {
-      console.error("Error loading departments:", error);
+      console.error("Error loading subjects:", error);
     }
   };
 
-  const renderDepartmentButtons = () => {
-    return departments.map((department) => (
+  const renderSubjectButtons = () => {
+    return subjects.map((subject) => (
       <Button
-        key={department.id}
-        title={department.name}
+        key={subject.id}
+        title={subject.name}
         onPress={() => {
           navigation.navigate("Quiz", {
-            quizName: department.name,
-            quizId: department.id,
+            quizName: subject.name,
+            quizId: subject.id,
           });
         }}
       />
     ));
   };
 
-  const createNewDepartment = async () => {
+  const createNewSubject = async () => {
     try {
-      // Create a new department on the server
-      await createDepartment("New Department"); // Pass the department name you want to create
-      // Reload departments to reflect the changes
-      loadDepartments();
+      // Create a new subject on the server
+      await createSubject("New Subject", 1); // Pass the subject name and departmentId
+      // Reload subjects to reflect the changes
+      loadSubjects();
     } catch (error) {
-      console.error("Error creating department:", error);
+      console.error("Error creating subject:", error);
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.departmentText}>Department: {departmentName}</Text>
-      <View style={styles.departmentButtons}>{renderDepartmentButtons()}</View>
-      <Button title="Create New Department" onPress={createNewDepartment} />
+      <View style={styles.subjectButtons}>{renderSubjectButtons()}</View>
+      <Button title="Create New Subject" onPress={createNewSubject} />
       <View style={styles.navigationButtons}>
         <Button
           title="Go Home"
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 20,
   },
-  departmentButtons: {
+  subjectButtons: {
     width: "75%",
     marginBottom: 20,
   },

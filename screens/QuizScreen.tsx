@@ -107,7 +107,6 @@ export function QuizScreen({ navigation, route }: Props) {
       selectedChoices[currentQuestionIndex] ===
       currentQuestion.correctAnswerIndex
     ) {
-      //setScore(score + 1);
       const updatedSelectedQuestions = [...selectedQuestions];
       updatedSelectedQuestions[currentQuestionIndex] = true;
       setSelectedQuestions(updatedSelectedQuestions);
@@ -136,7 +135,6 @@ export function QuizScreen({ navigation, route }: Props) {
     ) {
       navigation.navigate("Score", { score: newScore + 1, quizId: 1 });
     } else {
-      // setScore(newScore);
       navigation.navigate("Score", { score: newScore, quizId: 1 });
     }
   };
